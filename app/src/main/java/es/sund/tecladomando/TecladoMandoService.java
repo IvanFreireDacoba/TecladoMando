@@ -99,7 +99,11 @@ public class TecladoMandoService extends InputMethodService implements TecladoVi
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (view == null) {
+        // SOLO capturar el mando cuando el teclado esta VISIBLE. `view` se crea una
+        // vez y queda no-null para siempre aunque el teclado este oculto, asi que
+        // guardar por `view == null` hacia que el IME se tragara los botones del
+        // mando en TODO el sistema (p.ej. navegar ES-DE dejaba de funcionar).
+        if (view == null || !isInputViewShown()) {
             return super.onKeyDown(keyCode, event);
         }
         switch (keyCode) {
@@ -140,9 +144,14 @@ public class TecladoMandoService extends InputMethodService implements TecladoVi
                 return true;
 
             case KeyEvent.KEYCODE_BUTTON_START:
-            case KeyEvent.KEYCODE_BUTTON_SELECT:
             case KeyEvent.KEYCODE_MENU:
                 onAction(TecladoView.A_ENTER, null);
+                return true;
+
+            case KeyEvent.KEYCODE_BUTTON_SELECT:
+                // Select cierra el teclado (peticion del usuario): forma comoda de
+                // ocultarlo con el mando sin tocar la pantalla.
+                requestHideSelf(0);
                 return true;
 
             default:
@@ -152,6 +161,11 @@ public class TecladoMandoService extends InputMethodService implements TecladoVi
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // Solo con el teclado visible (ver onKeyDown): si no, dejar pasar el mando
+        // a la app de debajo (ES-DE, juegos, etc.).
+        if (!isInputViewShown()) {
+            return super.onKeyUp(keyCode, event);
+        }
         // Consumir el up de las mismas teclas que consumimos en down para que
         // no se filtren a la app de debajo.
         switch (keyCode) {
@@ -187,7 +201,8 @@ public class TecladoMandoService extends InputMethodService implements TecladoVi
 
     /** Lee HAT_X/Y (y el stick izquierdo) y mueve la seleccion con debounce. */
     public boolean handleMotion(MotionEvent event) {
-        if (view == null) {
+        // Solo con el teclado visible (ver onKeyDown): si no, no tocar el mando.
+        if (view == null || !isInputViewShown()) {
             return false;
         }
         if ((event.getSource() & InputDevice.SOURCE_JOYSTICK) != InputDevice.SOURCE_JOYSTICK
