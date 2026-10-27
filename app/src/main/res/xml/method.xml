@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Declaracion del IME "Teclado Mando". settingsActivity apunta a la
+     pantalla de ayuda/activacion de la propia app. -->
+<input-method xmlns:android="http://schemas.android.com/apk/res/android"
+    android:settingsActivity="es.sund.tecladomando.MainActivity"
+    android:isDefault="false">
+    <subtype
+        android:label="@string/app_name"
+        android:imeSubtypeLocale="es"
+        android:imeSubtypeMode="keyboard" />
+</input-method>

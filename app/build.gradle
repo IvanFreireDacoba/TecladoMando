@@ -1,0 +1,44 @@
+apply plugin: 'com.android.application'
+
+android {
+    namespace 'es.sund.tecladomando'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'es.sund.tecladomando'
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName '1.0.0'
+    }
+
+    // Keystore de debug FIJO y propio del proyecto: Android solo trata una
+    // instalacion como "actualizacion" compatible si la firma coincide exacta
+    // con la ya instalada. Con un keystore fijo, cualquier maquina que compile
+    // este proyecto firma igual y el autoactualizador puede instalar encima.
+    // El keystore NO esta en el repositorio: se copia a app/debug.keystore
+    // desde la copia de seguridad (jarjar:~/.secrets/tecladomando/).
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'tecladomando'
+            keyAlias 'tecladomando'
+            keyPassword 'tecladomando'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core:1.13.1'
+}

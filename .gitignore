@@ -1,0 +1,14 @@
+# Build
+.gradle/
+build/
+app/build/
+local.properties
+
+# Keystore de firma FIJO: NO se versiona (quien lo tenga puede firmar
+# "actualizaciones" de la app). Copia de seguridad en jarjar:~/.secrets/tecladomando/
+app/debug.keystore
+
+# IDE / varios
+*.iml
+.idea/
+.DS_Store
